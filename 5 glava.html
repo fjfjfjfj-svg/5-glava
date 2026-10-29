@@ -1,0 +1,298 @@
+from pathlib import Path
+
+html = r'''<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080d20">
+<title>THE UNKNOWN ARCHIVE — Глава V</title>
+<style>
+:root{
+  --bg:#080d20;--panel:rgba(15,23,48,.88);--panel2:rgba(20,29,57,.78);
+  --gold:#d9bd78;--gold2:#f2dfaa;--text:#e9e7e0;--muted:#aab0c2;
+  --line:rgba(217,189,120,.28);--blue:#8da8e8;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0%,#172343 0%,var(--bg) 58%);
+  color:var(--text);font-family:Georgia,"Times New Roman",serif;line-height:1.7;
+  overflow-x:hidden;
+}
+#stars{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.page{position:relative;z-index:1;width:min(900px,calc(100% - 32px));margin:0 auto;padding:34px 0 70px}
+.topline{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font:11px/1.5 Arial,sans-serif;letter-spacing:2px;text-transform:uppercase}
+.brand{color:var(--gold);letter-spacing:3px}
+.hero{text-align:center;padding:62px 10px 42px}
+.kicker{color:var(--gold);font:11px Arial,sans-serif;letter-spacing:4px;text-transform:uppercase}
+h1{font-size:clamp(34px,7vw,60px);font-weight:normal;line-height:1.12;letter-spacing:2px;margin:18px 0 14px}
+.subtitle{max-width:600px;margin:0 auto;color:var(--muted);font-size:17px}
+.rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:24px auto;width:min(420px,90%)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:clamp(20px,4vw,34px);margin:22px 0;box-shadow:0 18px 50px rgba(0,0,0,.16);backdrop-filter:blur(8px)}
+.panel h2{font-weight:normal;font-size:24px;color:var(--gold2);margin:0 0 12px}
+.panel p{margin:10px 0}
+.label{font:10px Arial,sans-serif;letter-spacing:2.5px;color:var(--gold);text-transform:uppercase;margin-bottom:12px}
+.muted{color:var(--muted)}
+.record{border-left:2px solid var(--gold);padding:2px 0 2px 20px;margin:20px 0}
+.record-title{font:11px Arial,sans-serif;letter-spacing:2px;color:var(--gold);text-transform:uppercase}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.action,.theory-button{
+  color:var(--gold2);background:rgba(217,189,120,.07);border:1px solid var(--line);
+  border-radius:8px;padding:12px 18px;transition:background .2s,border-color .2s,transform .2s;
+}
+.action:hover,.theory-button:hover{background:rgba(217,189,120,.15);border-color:var(--gold)}
+.action:focus-visible,.theory-button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--gold2);outline-offset:3px}
+.action:active,.theory-button:active{transform:translateY(1px)}
+.fragment{display:none;margin-top:16px;padding:16px;border:1px dashed var(--line);border-radius:8px;color:var(--muted)}
+.fragment.open{display:block}
+.theories{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
+.theory-button{width:100%;min-height:58px}
+.theory-result{display:none;padding:16px;margin-top:14px;background:rgba(7,12,29,.55);border-radius:8px;border:1px solid var(--line)}
+.theory-result.open{display:block}
+.codephrase{text-align:center;font-size:clamp(19px,3vw,26px);letter-spacing:.4px;color:var(--gold2);padding:12px 0}
+.reveal{display:none;text-align:center;padding:18px 0 4px}
+.reveal.open{display:block}
+.reveal-name{font-size:clamp(26px,5vw,42px);color:var(--gold2);letter-spacing:2px;margin:10px 0}
+.meeting{border:1px solid var(--line);background:rgba(5,9,22,.42);border-radius:10px;padding:20px;margin-top:20px}
+.meeting strong{color:var(--gold2);font-weight:normal}
+.choice-form{margin-top:18px}
+.field-label{display:block;color:var(--gold2);margin:20px 0 10px}
+.choices{display:grid;gap:10px}
+.choice{
+  display:flex;align-items:flex-start;gap:12px;padding:14px 15px;border:1px solid rgba(170,176,194,.24);
+  border-radius:9px;background:rgba(6,11,27,.45);cursor:pointer;transition:border-color .2s,background .2s;
+}
+.choice:hover{border-color:var(--gold)}
+.choice:has(input:checked){border-color:var(--gold);background:rgba(217,189,120,.09)}
+.choice input{flex:0 0 auto;margin:5px 0 0;accent-color:var(--gold);width:17px;height:17px;cursor:pointer}
+.choice span{display:block;flex:1}
+textarea{
+  display:block;width:100%;min-height:125px;resize:vertical;padding:13px 14px;color:var(--text);
+  background:#090f24;border:1px solid rgba(170,176,194,.35);border-radius:8px;line-height:1.6;
+  pointer-events:auto;position:relative;z-index:2;
+}
+textarea::placeholder{color:#858da4}
+.form-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px}
+.submit{background:var(--gold);color:#101426;border:1px solid var(--gold);font: bold 11px Arial,sans-serif;letter-spacing:1.5px;padding:15px 20px;border-radius:8px}
+.submit:hover{background:var(--gold2)}
+.submit:disabled{opacity:.65;cursor:wait}
+.status{display:none;margin-top:18px;padding:14px 16px;border-radius:8px;border:1px solid var(--line);overflow-wrap:anywhere}
+.status.show{display:block}
+.status.success{color:#d9efcf;border-color:rgba(147,201,127,.5)}
+.status.error{color:#ffd3d3;border-color:rgba(255,130,130,.5)}
+.small{font:12px/1.6 Arial,sans-serif;color:var(--muted)}
+footer{text-align:center;color:#7f879c;font:10px Arial,sans-serif;letter-spacing:2px;margin-top:40px}
+@media(max-width:640px){
+ .page{width:min(100% - 22px,900px);padding-top:22px}
+ .hero{padding:45px 6px 28px}
+ .theories{grid-template-columns:1fr}
+ .theory-button{min-height:48px}
+ .topline{font-size:9px;letter-spacing:1.4px}
+ .panel{padding:20px 17px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<canvas id="stars" aria-hidden="true"></canvas>
+<main class="page">
+  <div class="topline"><span class="brand">THE UNKNOWN ARCHIVE</span><span>ДЕЛО № 005 · ЗАКЛЮЧИТЕЛЬНАЯ ГЛАВА</span></div>
+  <header class="hero">
+    <div class="kicker">Архивный доступ открыт</div>
+    <h1>ЗА ИМЕНЕМ<br>АРХИВА</h1>
+    <p class="subtitle">Некоторые тайны существуют не для того, чтобы скрывать правду, а чтобы однажды привести к ней</p>
+    <div class="rule"></div>
+    <p class="muted">Пятая запись. Последняя страница.</p>
+  </header>
+
+  <section class="panel">
+    <div class="label">Запись 01 · Финальная проверка</div>
+    <h2>Ты дошла до конца</h2>
+    <p>Ты видела фрагменты, сопоставляла детали и искала того, кто оставил следы. Теперь можно перестать искать новые улики и посмотреть на историю целиком.</p>
+    <div class="record">
+      <div class="record-title">Из заметок составителя</div>
+      <p>Самые важные ответы редко появляются в одном документе. Иногда они складываются из маленьких деталей, которые по отдельности кажутся случайными.</p>
+    </div>
+    <button class="action" type="button" id="fragmentToggle" aria-expanded="false" aria-controls="extraFragment">ОТКРЫТЬ ПОСЛЕДНИЙ ФРАГМЕНТ</button>
+    <div class="fragment" id="extraFragment">
+      <p>Время, слова, совпадения, знакомые обстоятельства. У каждой записи была своя причина появиться именно здесь. Но архив не должен решать за тебя, что всё это означает.</p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="label">Запись 02 · Три версии</div>
+    <h2>Кто стоял за архивом?</h2>
+    <p class="muted">Выбери версию, которая кажется тебе наиболее убедительной. Здесь нет неправильного выбора — это часть истории.</p>
+    <div class="theories" role="group" aria-label="Версии происхождения архива">
+      <button class="theory-button" type="button" data-theory="one">Версия первая</button>
+      <button class="theory-button" type="button" data-theory="two">Версия вторая</button>
+      <button class="theory-button" type="button" data-theory="three">Версия третья</button>
+    </div>
+    <div class="theory-result" id="theoryResult" aria-live="polite"></div>
+  </section>
+
+  <section class="panel">
+    <div class="label">Запись 03 · Ключевая фраза</div>
+    <h2>Собери смысл</h2>
+    <p>В разных главах встречались подсказки. Возможно, главная из них была не координатой и не именем, а мыслью, которую нужно было заметить.</p>
+    <div class="codephrase">«Иногда ответ всё это время был рядом»</div>
+    <p class="muted">Теперь осталось открыть последнюю запись.</p>
+    <div style="text-align:center;margin-top:18px">
+      <button class="action" type="button" id="revealButton">РАСКРЫТЬ АВТОРА АРХИВА</button>
+    </div>
+    <div class="reveal" id="authorReveal" aria-live="polite">
+      <div class="rule"></div>
+      <div class="label">Личность установлена</div>
+      <div class="reveal-name">ЭТО БЫЛ Я</div>
+      <p>За этим архивом стоял человек, который хотел не просто рассказать историю, а найти необычный способ сказать тебе кое-что важное.</p>
+      <p>Все главы были собраны ради одного простого момента — возможности пригласить тебя встретиться.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="invitation">
+    <div class="label">Запись 04 · Личное приглашение</div>
+    <h2>Продолжение — уже не в архиве</h2>
+    <p>Я хочу пригласить тебя на встречу. Без загадок, без обязательств и без необходимости отвечать так, как от тебя кто-то ждёт. Мне просто хотелось бы провести с тобой немного времени и поговорить.</p>
+    <div class="meeting">
+      <p><strong>Место:</strong> <span id="meetingPlace">будет указано позже</span></p>
+      <p><strong>Дата:</strong> <span id="meetingDate">будет указана позже</span></p>
+      <p><strong>Время:</strong> <span id="meetingTime">будет указано позже</span></p>
+      <p class="small">Детали встречи будут добавлены сюда, когда всё будет определено. Ты можешь спокойно подумать — любой твой ответ будет принят с уважением.</p>
+    </div>
+
+    <form class="choice-form" id="choiceForm">
+      <input type="hidden" name="access_key" value="e6397b32-15bd-492b-bbe0-8377af887297">
+      <input type="hidden" name="subject" value="THE UNKNOWN ARCHIVE — ответ на приглашение">
+      <input type="hidden" name="from_name" value="THE UNKNOWN ARCHIVE">
+      <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" style="display:none!important" aria-hidden="true">
+      <span class="field-label" id="answerLabel">Твой ответ на приглашение</span>
+      <div class="choices" role="radiogroup" aria-labelledby="answerLabel">
+        <label class="choice"><input type="radio" name="Ответ на приглашение" value="Да, я приду" required><span>Да, я приду</span></label>
+        <label class="choice"><input type="radio" name="Ответ на приглашение" value="Мне нужно немного подумать"><span>Мне нужно немного подумать</span></label>
+        <label class="choice"><input type="radio" name="Ответ на приглашение" value="Нет, но спасибо за историю"><span>Нет, но спасибо за историю</span></label>
+      </div>
+      <label class="field-label" for="extraMessage">Если хочешь, можешь оставить сообщение</label>
+      <textarea id="extraMessage" name="Дополнительное сообщение" maxlength="1000" placeholder="Здесь можно написать всё, что захочется…"></textarea>
+      <p class="small">Сообщение необязательно. Форма отправит выбранный ответ и текст, если ты его напишешь.</p>
+      <div class="form-actions">
+        <button class="submit" id="sendBtn" type="submit">ОТПРАВИТЬ МОЙ ОТВЕТ</button>
+        <span class="small">Ответ отправляется через защищённое соединение Web3Forms.</span>
+      </div>
+      <div class="status" id="formStatus" role="status" aria-live="polite"></div>
+    </form>
+  </section>
+  <footer>THE UNKNOWN ARCHIVE · КОНЕЦ ДЕЛА № 005</footer>
+</main>
+<script>
+(function(){
+  "use strict";
+
+  // Небольшой фон со звёздами; не перехватывает нажатия и не мешает форме.
+  const canvas = document.getElementById("stars");
+  const ctx = canvas.getContext("2d");
+  let stars = [];
+  let width = 0, height = 0, dpr = 1;
+  function resizeStars(){
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    width = window.innerWidth; height = window.innerHeight;
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    stars = Array.from({length: Math.min(130, Math.floor(width * height / 9000))}, () => ({
+      x: Math.random()*width, y: Math.random()*height,
+      r: Math.random()*1.3+.2, a: Math.random()*.55+.15
+    }));
+    drawStars();
+  }
+  function drawStars(){
+    ctx.clearRect(0,0,width,height);
+    for(const s of stars){
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle = "rgba(224,224,255,"+s.a+")"; ctx.fill();
+    }
+  }
+  window.addEventListener("resize", resizeStars, {passive:true});
+  resizeStars();
+
+  const fragmentToggle = document.getElementById("fragmentToggle");
+  const extraFragment = document.getElementById("extraFragment");
+  fragmentToggle.addEventListener("click", function(){
+    const isOpen = extraFragment.classList.toggle("open");
+    fragmentToggle.setAttribute("aria-expanded", String(isOpen));
+    fragmentToggle.textContent = isOpen ? "СКРЫТЬ ФРАГМЕНТ" : "ОТКРЫТЬ ПОСЛЕДНИЙ ФРАГМЕНТ";
+  });
+
+  const theoryResult = document.getElementById("theoryResult");
+  const theoryTexts = {
+    one: "Версия первая: архив был создан ради самой загадки. Но даже самая сложная загадка теряет смысл, если за ней никого нет.",
+    two: "Версия вторая: подсказки оставил человек, который хотел, чтобы ты заметила детали. Каждая глава была частью одного замысла.",
+    three: "Версия третья: автор всё это время был ближе, чем казалось. Иногда знакомое лицо оказывается последней и самой неожиданной уликой."
+  };
+  document.querySelectorAll("[data-theory]").forEach(function(button){
+    button.addEventListener("click", function(){
+      const key = button.getAttribute("data-theory");
+      theoryResult.textContent = theoryTexts[key] || "";
+      theoryResult.classList.add("open");
+      document.querySelectorAll("[data-theory]").forEach(b => b.setAttribute("aria-pressed", String(b === button)));
+    });
+  });
+
+  const revealButton = document.getElementById("revealButton");
+  const authorReveal = document.getElementById("authorReveal");
+  revealButton.addEventListener("click", function(){
+    const isOpen = authorReveal.classList.toggle("open");
+    revealButton.textContent = isOpen ? "СКРЫТЬ ПОСЛЕДНЮЮ ЗАПИСЬ" : "РАСКРЫТЬ АВТОРА АРХИВА";
+    if(isOpen) authorReveal.scrollIntoView({behavior:"smooth", block:"nearest"});
+  });
+
+  const form = document.getElementById("choiceForm");
+  const statusBox = document.getElementById("formStatus");
+  const sendBtn = document.getElementById("sendBtn");
+  form.addEventListener("submit", async function(event){
+    event.preventDefault();
+    statusBox.className = "status";
+    statusBox.textContent = "";
+    if(!form.querySelector('input[name="Ответ на приглашение"]:checked')){
+      statusBox.textContent = "Пожалуйста, выбери один из вариантов ответа.";
+      statusBox.classList.add("show","error");
+      return;
+    }
+    sendBtn.disabled = true;
+    sendBtn.textContent = "ОТПРАВКА…";
+    try{
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method:"POST",
+        body:new FormData(form),
+        headers:{"Accept":"application/json"}
+      });
+      let result;
+      try { result = await response.json(); }
+      catch(parseError){ throw new Error("Сервис вернул непонятный ответ. Попробуй ещё раз."); }
+      if(response.ok && result && result.success){
+        statusBox.textContent = "Твой ответ получен. Спасибо, что дочитала архив до конца. Какой бы ни был твой выбор, он будет уважен.";
+        statusBox.classList.add("show","success");
+        sendBtn.textContent = "ОТВЕТ ОТПРАВЛЕН";
+        // Не очищаем форму сразу: пользователь может проверить свой ответ.
+      } else {
+        throw new Error((result && result.message) || "Сервис не принял форму.");
+      }
+    } catch(error){
+      statusBox.textContent = "Не удалось отправить ответ. Проверь интернет, ключ и настройки Web3Forms. Твой выбранный вариант и сообщение остались на странице — попробуй ещё раз.";
+      statusBox.classList.add("show","error");
+      sendBtn.disabled = false;
+      sendBtn.textContent = "ПОПРОБОВАТЬ ЕЩЁ РАЗ";
+    }
+  });
+})();
+</script>
+</body>
+</html>
+'''
+
+path = Path("/mnt/data/unknown_archive_chapter_v_fixed.html")
+path.write_text(html, encoding="utf-8")
+print(f"Создан файл: {path} ({path.stat().st_size} байт)")
